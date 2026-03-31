@@ -1,6 +1,8 @@
 import streamlit as st
 import numpy as np
 import joblib
+import matplotlib.pyplot as plt
+import pandas as pd
 
 # Load trained model (IMPORTANT: save model first)
 model = joblib.load("model.pkl")
@@ -39,3 +41,34 @@ if st.button("Predict Percentile"):
     prediction = model.predict(input_data)[0]
 
     st.success(f"🎯 Predicted Percentile: {prediction:.2f}")
+    st.subheader("📊 Dataset Overview")
+
+df = pd.read_csv("jee_dataset.csv")
+
+fig, ax = plt.subplots()
+ax.scatter(df["maths_marks"], df["percentile"], label="Maths", alpha=0.5)
+ax.scatter(df["physics_marks"], df["percentile"], label="Physics", alpha=0.5)
+ax.scatter(df["chemistry_marks"], df["percentile"], label="Chemistry", alpha=0.5)
+
+ax.set_xlabel("Marks")
+ax.set_ylabel("Percentile")
+ax.legend()
+
+st.pyplot(fig)
+st.subheader("📌 Feature Importance")
+
+importances = model.feature_importances_
+features = [
+    "Maths Marks",
+    "Physics Marks",
+    "Chemistry Marks",
+    "Maths Diff",
+    "Physics Diff",
+    "Chemistry Diff"
+]
+
+fig2, ax2 = plt.subplots()
+ax2.barh(features, importances)
+ax2.set_xlabel("Importance")
+
+st.pyplot(fig2)
